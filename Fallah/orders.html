@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الطلبات</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      direction: rtl;
+      text-align: right;
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    h2, h3 {
+      color: #007bff;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .order-container, .product-container, .meeting-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .order-item, .product-item, .meeting-item {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      width: calc(33% - 15px);
+      box-sizing: border-box;
+    }
+
+    .order-item p, .product-item p, .meeting-item p {
+      margin: 0;
+      color: #333;
+    }
+
+    .order-item p strong, .product-item p strong, .meeting-item p strong {
+      color: #007bff;
+    }
+
+    .alert-info {
+      margin-top: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .order-item, .product-item, .meeting-item {
+        width: calc(50% - 15px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .order-item, .product-item, .meeting-item {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>الطلبات</h2>
+    <div id="demandOrders" class="order-container"></div>
+    <hr>
+    <h3>لللبيع</h3>
+    <div id="sellProducts" class="product-container"></div>
+    <hr>
+    <div class="container mt-5">
+      <h1>طلبات الاجتماعات</h1>
+      <div id="meetingRequestsContainer"></div>
+    </div>
+
+    <div class="toast" id="toastNotification" style="position: fixed; bottom: 20px; right: 20px;">
+      <div class="toast-body"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const meetingRequestsContainer = document.getElementById("meetingRequestsContainer");
+
+      // Retrieve stored meeting requests from localStorage
+      const meetingRequests = JSON.parse(localStorage.getItem("meetingRequests")) || [];
+
+      // Check if there are any meeting requests
+      if (meetingRequests.length === 0) {
+        meetingRequestsContainer.innerHTML = "<p>لا توجد طلبات اجتماعات محفوظة.</p>";
+        return;
+      }
+
+      // Create a table or list to display the meeting requests
+      let tableHTML = `
+        <table class="table">
+          <thead>
+            <tr>
+              <th>الاسم الكامل</th>
+              <th>البريد الإلكتروني</th>
+              <th>تاريخ الاجتماع</th>
+              <th>الرسالة</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      // Loop through the meeting requests and add rows
+      meetingRequests.forEach((request) => {
+        tableHTML += `
+          <tr>
+            <td>${request.fullName}</td>
+            <td>${request.email}</td>
+            <td>${request.meetingDate}</td>
+            <td>${request.message || "—"}</td>
+          </tr>
+        `;
+      });
+
+      tableHTML += `
+          </tbody>
+        </table>
+      `;
+
+      // Append the table to the container
+      meetingRequestsContainer.innerHTML = tableHTML;
+    });
+  </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const demandOrdersContainer = document.getElementById('demandOrders');
+    const sellProductsContainer = document.getElementById('sellProducts');
+
+    // Retrieve demand data from localStorage
+    const demandData = JSON.parse(localStorage.getItem('demandData')) || [];
+    if (demandData.length > 0) {
+      demandData.forEach(order => {
+        const orderItem = document.createElement('div');
+        orderItem.classList.add('order-item');
+        orderItem.innerHTML = `
+          <p><strong>اسم المنتج:</strong> ${order.productName}</p>
+          <p><strong>الكمية:</strong> ${order.quantity}</p>
+          <p><strong>العنوان:</strong> ${order.address}</p>
+          <p><strong>رقم الهاتف:</strong> ${order.phoneNumber}</p>
+        `;
+        demandOrdersContainer.appendChild(orderItem);
+      });
+    } else {
+      demandOrdersContainer.innerHTML = '<p class="alert alert-info">لا توجد طلبات حالياً.</p>';
+    }
+
+    // Retrieve sell products data from localStorage
+    const sellData = JSON.parse(localStorage.getItem('sellData')) || [];
+    if (sellData.length > 0) {
+      sellData.forEach(product => {
+        const productItem = document.createElement('div');
+        productItem.classList.add('product-item');
+        productItem.innerHTML = `
+          <p><strong>اسم المنتج:</strong> ${product.itemName}</p>
+          <p><strong>الكمية:</strong> ${product.itemQuantity} كغ</p>
+          <p><strong>السعر:</strong> ${product.itemPrice} دج لكل كغ</p>
+          <p><strong>اسم البائع:</strong> ${product.sellerFullName}</p>
+          <p><strong>رقم الهاتف:</strong> ${product.contactNumber}</p>
+          <p><strong>العنوان:</strong> ${product.sellerLocation}</p>
+        `;
+        sellProductsContainer.appendChild(productItem);
+      });
+    } else {
+      sellProductsContainer.innerHTML = '<p class="alert alert-info">لا توجد منتجات مباعة حالياً.</p>';
+    }
+  });
+</script>
+
+</body>
+</html>
